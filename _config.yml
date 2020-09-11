@@ -81,14 +81,14 @@ analytics:
 # Site Author
 author:
   name             : "Your Sidebar Name"
-  avatar           : "profile.png"
+  avatar           : "headshot_cambridge.jpg"
   bio              : "Your biography for the left-hand sidebar"
   location         : "San Francisco, CA"
   employer         :
-  pubmed           : "https://www.ncbi.nlm.nih.gov/pubmed/?term=john+snow"
+  pubmed           : #"https://www.ncbi.nlm.nih.gov/pubmed/?term=john+snow"
   googlescholar    : "https://scholar.google.com/citations?user=Sv9i0lwAAAAJ&hl=en"
   email            :
-  researchgate     :  "https://www.researchgate.net/profile/Gavin_Hartnett"
+  researchgate     : "https://www.researchgate.net/profile/Gavin_Hartnett"
   uri              :
   bitbucket        :
   codepen          :
