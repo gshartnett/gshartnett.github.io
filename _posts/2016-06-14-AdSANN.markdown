@@ -10,7 +10,6 @@ This post is about Artificial Neural Networks (or just neural networks for short
 
 First, let me comment on the title. I would argue that one of the most profound scientific discoveries in my lifetime has been the [AdS/CFT Correspondence](https://en.wikipedia.org/wiki/AdS/CFT_correspondence) which is a duality, or equivalence between two very different types of theories. Here AdS stands for Anti-de Sitter space, the maximally symmetric negatively curved spacetime. This sounds like a mouthful but the idea is very simple--it’s basically the spacetime analog of a hyperbolic space in the same way that Minkowski space is the spacetime analog of flat Euclidean space \\( \mathbb{R}^4 \\). An example of a negatively curved space is depicted in this M.C. Escher painting
 
-#{% include image.html url="/assets/AdSANN/escher.jpg" description="Notice how an infinite number of fish (or newts, or whatever they are) can be fit inside the disk. <br><br>" %}
 <p align="center">
     <img src="/assets/AdSANN/escher.jpg"/>
 </p>
@@ -31,7 +30,6 @@ $$ \sigma(x) = \frac{1}{1+ \exp(-x) } \, $$
 
 because it is simple and shows up the elementary machine learning technique of logistic regression. There are plenty of other acceptable choices, such as the \\( tanh(x) \\) function. The logistic function does not actually yield the best performance but it is very simple.
 
-#{% include image.html url="/assets/AdSANN/sigmoid.png" description="The logistic function <br><br>" %}
 <p align="center">
     <img src="/assets/AdSANN/sigmoid.png"/>
 </p>
@@ -46,7 +44,6 @@ As best I can tell, the "harmonic oscillator" for neural networks is a feed-forw
 
 The MNIST data set, along with benchmarks of various publications can be found [here](http://yann.lecun.com/exdb/mnist/). The statement of the problem is: given a 28x28 pixel gray-scale image of a handwritten number 0-9, where each pixel is a number from 0 to 255 indicating the intensity, correctly identify the number as often as possible. Here is a typical image:
 
-#{% include image.html url="/assets/AdSANN/MNISTexample.png" description="" %}
 <p align="center">
     <img src="/assets/AdSANN/MNISTexample.png"/>
 </p>
@@ -124,7 +121,6 @@ $$ J(\theta_0, \theta_1) = \frac{1}{N} \sum_{i=1}^N \left(y_i - y(x_i) \right)^2
 
 The solution to this problem is simple--just find the \\( \theta \\)'s for which the derivatives with respect to the \\( \theta \\)'s vanishes, and this will be the minimum. J can be thought of as a Hamiltonian for a point particle in a potential well, and the goal is to find the minimal energy configuration. The result might look something like this
 
-#{% include image.html url="/assets/AdSANN/linearregression.png" description="Standard linear regression for noisy data <br><br>" %}
 <p align="center">
     <img src="/assets/AdSANN/linearregression.png"/>
 </p>
@@ -158,7 +154,6 @@ Unlike logistic regression, the entries \\(p_k^i\\) (with \\(k = 1...10 \\) ) ar
 
 The way the neural network takes a 784-dimensional input and returns this 10-dimensional output is a just a series of matrix multiplications followed by the application of the sigmoid activation function. This process is most conveniently described pictorially:
 
-#{% include image.html url="/assets/AdSANN/NNdrawer-pics-pdf-291x300.jpg" description="A simple feed-forward Artificial Neural Network <br><br>" %}
 <p align="center">
     <img src="/assets/AdSANN/NNdrawer-pics-pdf-291x300.jpg"/>
 </p>
@@ -191,7 +186,6 @@ I implemented a neural network like the kind discussed here There are 60,000 lab
 
 One thing that I became really hung-up on throughout this process was the convergence of the gradient descent training procedure. The code *never seemed to converge*. Perhaps I just wasn't running it for long enough. Here's a typical plot of the training cost \\( J \\) throughout the training
 
-#{% include image.html url="/assets/AdSANN/trainingcost.png" description="Training cost J of the neural network during gradient descent <br><br>" %}
 <p align="center">
     <img src="/assets/AdSANN/trainingcost.png"/>
 </p>
@@ -210,7 +204,6 @@ In reading and watching online talks about neural networks, you'll often hear ab
 
 *This is disheartening. The possibility that we are living in a false vacuum has never been a cheering one to contemplate. Vacuum decay is the ultimate ecological catastrophe; in a new vacuum there are new constants of nature; after vacuum decay, not only is life as we know it impossible, so is chemistry as we know it. However, one could always draw stoic comfort from the possibility that perhaps in the course of time the new vacuum would sustain, if not life as we know it, at least some structures capable of knowing joy. This possibility has now been eliminated.*
 
-#{% include image.html url="/assets/AdSANN/falsevacuum.png" description="Vacuum decay: in quantum mechanics the system can tunnel from local minima to the true, global minimum. <br><br>" %}
 <p align="center">
     <img src="/assets/AdSANN/falsevacuum.png"/>
 </p>
@@ -225,7 +218,6 @@ If all the eigenvalues are positive (negative) then the critical point is a glob
 
 "This is all very nice, but what does this have to do with neural networks?", you ask. Well, the neural network problem is naturally a high-dimensional problem. The cost function \\( J \\) is a function of the \\(\Theta^{(\ell)} \\) matrices, and for the neural network I trained for this problem, with 2 hidden layers of 300 and 100 units each, the number of parameters in these matrices is 266,610. Now, to be fair, the cost function of a neural network is almost certainly not a gaussian random field, but I see no reason that the statistics of its critical points should behave qualitatively differently than above. I would expect that the assumption of a gaussian-distributed random field is mainly meant to make the problem tractable. This was also Dauphin et al's expectation, and they verified empirically that the same phenomena observed in the Bray & Dean paper is exhibited by neural networks.
 
-#{% include image.html url="/assets/AdSANN/coinflip.gif" description="What are the odds of flipping heads 266,610 out of 266,610 times? Not good, kiddo. <br><br>" %}
 <p align="center">
     <img src="/assets/AdSANN/coinflip.gif"/>
 </p>

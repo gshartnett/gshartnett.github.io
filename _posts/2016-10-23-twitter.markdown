@@ -2,7 +2,7 @@
 layout: post
 title:  "Twitter, Entropy, and U.S. Presidential Politics"
 date:   2016-10-23 00:00:00 +0000
-categories: 
+categories:
 comments: true
 ---
 
@@ -29,15 +29,15 @@ comments: true
 
 ## Introduction
 
-On June 23, the United Kingdom held a referendum on continued membership of the European Union. The political drama of the infamous Brexit vote was particularly exhilarating for me because I happen to be currently living in the UK as a physics postdoc. I watched as Brexit grew from what seemed to be a fringe issue, quickly dismissed by my British colleagues, to an issue supported by about half of the population. One thing that shocked me was the disconnect between polling and "expert sentiment". Betting markets and many pundits felt that the Remain camp would prevail, and yet on the week of the vote the race was tight enough that the polls couldn't resolve which side was in the lead. Watching the chaos in the London financial sector and the nose dive of the pound the day after the vote left a strong impression on me -- how could one of two roughly equally likely outcomes, outcomes which were so important to the well-being of the United Kingdom, and even the wider European Union, have come as such a shock to so many experts? It seemed to me that the likelihood of Brexit was severely underestimated. 
+On June 23, the United Kingdom held a referendum on continued membership of the European Union. The political drama of the infamous Brexit vote was particularly exhilarating for me because I happen to be currently living in the UK as a physics postdoc. I watched as Brexit grew from what seemed to be a fringe issue, quickly dismissed by my British colleagues, to an issue supported by about half of the population. One thing that shocked me was the disconnect between polling and "expert sentiment". Betting markets and many pundits felt that the Remain camp would prevail, and yet on the week of the vote the race was tight enough that the polls couldn't resolve which side was in the lead. Watching the chaos in the London financial sector and the nose dive of the pound the day after the vote left a strong impression on me -- how could one of two roughly equally likely outcomes, outcomes which were so important to the well-being of the United Kingdom, and even the wider European Union, have come as such a shock to so many experts? It seemed to me that the likelihood of Brexit was severely underestimated.
 
 After the rush of experiencing Brexit first hand, my attention turned to the 2016 US presidential election, which had recently entered the general election stage with the RNC convention occurring just days before. Since then, I have been completely consumed by the election, obsessively checking [538](http://fivethirtyeight.com/) and Twitter multiple times a day. I think it's a muted understatement to say that 2016 has been a wild ride for anyone paying attention to politics, and especially so for a junkie such as myself. After one too many days of being flabbergasted by political developments I had thought were unlikely based on my understanding of politics, I started to wonder if there might be room to apply some of the machine learning and data science techniques I had been learning about in my spare time to political polling. I had just read Nate Silver's wonderful book, "The Signal and the Noise: The Art and Science of Prediction", which impressed upon me that polling is a very difficult and complicated task that requires very careful selection of respondents, features delays of a few days, and relies on what seemed to me to be very small sample sizes.
 
 In this blog post I want to begin to explore an alternate model for political polling that ditches carefully selected polling samples and instead utilizes vast amounts of publicly available information on social media platforms such as Twitter to do real time polling. In this [wonderful article](http://static.googleusercontent.com/media/research.google.com/en//pubs/archive/35179.pdf) by Halevy, Norvig, and Pereira of Google, they emphasize that in many cases, simple models with a lot of data can beat out complicated models with less data. Could something of this flavor apply to polling? After all, each day there is a tremendous amount of activity on the internet regarding current political events, if one could develop a way to use this information to gain a sense of the distribution of opinions in real time, then perhaps this could lead to improved political forecasts.
 
-This idea is sufficiently general that I'm not the first to think of it, but I was interested enough to tinker around and see what I could work out. I settled on the idea of using Twitter to try to gain some insight to the US presidential election. I found a paper, [Twitter Sentiment Classification using Distant Supervision](http://cs.stanford.edu/people/alecmgo/papers/TwitterDistantSupervision09.pdf) by Go, Bhayani, and Huang which really inspired me. I decided to expand on it by incorporating a new idea of my own and to apply the resulting model to the US presidential debates between Hillary Clinton and Donald Trump. 
+This idea is sufficiently general that I'm not the first to think of it, but I was interested enough to tinker around and see what I could work out. I settled on the idea of using Twitter to try to gain some insight to the US presidential election. I found a paper, [Twitter Sentiment Classification using Distant Supervision](http://cs.stanford.edu/people/alecmgo/papers/TwitterDistantSupervision09.pdf) by Go, Bhayani, and Huang which really inspired me. I decided to expand on it by incorporating a new idea of my own and to apply the resulting model to the US presidential debates between Hillary Clinton and Donald Trump.
 
-This project is in very exploratory, and I think there are many interesting directions to pursue. The code associated with this project can be found on Github [here](https://github.com/gshartnett/twitter-classification). 
+This project is in very exploratory, and I think there are many interesting directions to pursue. The code associated with this project can be found on Github [here](https://github.com/gshartnett/twitter-classification).
 
 
 ## Sentiment Classification
@@ -53,7 +53,7 @@ In this section I will first describe some generalities of sentiment classificat
 In order to model the sentiment of tweets, I will make an assumption that undoubtedly oversimplifies the problem, namely that each tweet may be classified as either negative, neutral, or positive. I will use the label \\(s \\) to denote the sentiment value, quantized to be
 
 $$
-s = 
+s =
 \begin{cases}
   -1 \, , & \text{negative} \\
   0 \, , & \text{neutral} \\
@@ -65,7 +65,7 @@ This model of sentiment is obviously very restrictive, and fails to capture many
 
 Within this simplified framework for sentiment classification, the goal is then to build a model that can with high accuracy correctly predict the sentiment of a tweet. To build such a model, we will need a (preferably) large training data set with lots of tweets whose sentiment has already been labelled by some means. There are two main challenges in acquiring this data. First, the data has to be downloaded from somewhere. Tweets are easy enough to download through Twitter's API, but API is rate-limited which means only so many tweets may be downloaded per unit of time. Therefore, in order to amass a large data set one will need to automate the process so that tweets are being downloaded constantly. I was able to achieve this with a few lines of Python code and crontab (I'm running Linux).
 
-The more challenging aspect is finding a way to obtain labelled data. One option is to do it by hand, but this is a painstaking and slow task, not suitable for data sets of millions of tweets. Even if the labelling task could be crowd-sourced in some clever way, the sentiment of a tweet isn't obvious and different people might use different definitions. In fact, I haven't defined what sentiment actually is yet and in fact I won't attempt to provide one. Instead I'll adopt a more pragmatic, engineer-style approach where I'll use some simple criteria to find a large set of three distinct types of tweets that should fit most common notions of containing negative/neutral/positive sentiments, and then I'll use these tweets to build a model. I won't ever both to actually confront the philosophical issue of how to define sentiment. 
+The more challenging aspect is finding a way to obtain labelled data. One option is to do it by hand, but this is a painstaking and slow task, not suitable for data sets of millions of tweets. Even if the labelling task could be crowd-sourced in some clever way, the sentiment of a tweet isn't obvious and different people might use different definitions. In fact, I haven't defined what sentiment actually is yet and in fact I won't attempt to provide one. Instead I'll adopt a more pragmatic, engineer-style approach where I'll use some simple criteria to find a large set of three distinct types of tweets that should fit most common notions of containing negative/neutral/positive sentiments, and then I'll use these tweets to build a model. I won't ever both to actually confront the philosophical issue of how to define sentiment.
 
 ---
 
@@ -126,7 +126,7 @@ because the 6th most common word ("wa", the lemmatized form of "was") shows up t
 
 $$ w_i = 2 \delta_{i,5} + \delta_{i,70} + \delta_{i,80} + ... $$
 
-where \\( \delta_{i,j} \\) is the Kronecker delta. This way, \\( w_i \\) is the number of times word \\( i \\) appears in the document. Now this is starting to look like something we can feed into a machine learning algorithm! 
+where \\( \delta_{i,j} \\) is the Kronecker delta. This way, \\( w_i \\) is the number of times word \\( i \\) appears in the document. Now this is starting to look like something we can feed into a machine learning algorithm!
 
 As of the time of writing this article, I have collected about 2.5 million tweets for the training data. Many of these had to be dropped in the preprocessing stage, after which I had 1.6 million tweets (Go et al also had 1.6 million). However, because of the different rates for collecting the various tweets, the distribution between the three classes is not even. In order to protect my model from bias, I decided to drop tweets so that in the end each class represented 1/3 of the data. After this step the training data consists of about 1 million tweets.
 
@@ -168,16 +168,16 @@ I decided to construct a the Maximum Entropy classifier because of its connectio
 
 The constraints are observed features of the data. In a physics setting, these would be certain expectation values defining the ensemble. In our case, we'll take these to be word counts among the different classes. Consider
 
-$$ f_{w,c'}(d,c) = 
+$$ f_{w,c'}(d,c) =
 \begin{cases}
   \frac{N(d,w)}{N(d)} \, , & c \neq c' \\
   0 \, , & c=c'
 \end{cases}
 $$
 
-where \\( N(d,w) \\) is the number of times word \\(w \\) appears in document \\(d\\), and \\( N(d) \\) is the number of words in \\( d\\). The constraints are then 
+where \\( N(d,w) \\) is the number of times word \\(w \\) appears in document \\(d\\), and \\( N(d) \\) is the number of words in \\( d\\). The constraints are then
 
-$$ \sum_d f_{w,c(d)}(d,c(d)) = \sum_{d,c} P(c|d) f_{w,c}(d,c) \, , $$ 
+$$ \sum_d f_{w,c(d)}(d,c(d)) = \sum_{d,c} P(c|d) f_{w,c}(d,c) \, , $$
 
 so that the average value of \\( f\\) on the training data matches the value given by the probability distribution \\( P(c\|d)\\) we are solving for. It turns out that the constrained optimization problem presented here is dual to an optimization problem where the distribution is taken to be of the following exponential form,
 
@@ -283,7 +283,7 @@ $$ \tilde{M}_{ij} = \frac{\tilde{n}_i}{n_i} M_{ij} \, .$$
 
 This new matrix can then be used to find the new predicted densities \\( \hat{ \tilde{n} }\_i \\), and hence the predicted sentiment \\( \hat{\tilde{s}} \\). Clearly this error is linear in the parameters \\( \tilde{n}\_i \\), and so is extremized on the boundary of the parameter space triangle. In the real world we are unlikely to encounter data sets that are so polarized, and should expect typical data sets to lie closer to the center.
 
-It should be pointed out here that this analysis assumes the error only depends on the distribution of positive/neutral/negative tweets, which is definitely not the case -- the error also depends on the types of tweets in the data set, how they were labelled, etc. But this method is a good (and cheap) way to take the error for one data set and estimate it for similar data sets with different relative ratios of sentiments. 
+It should be pointed out here that this analysis assumes the error only depends on the distribution of positive/neutral/negative tweets, which is definitely not the case -- the error also depends on the types of tweets in the data set, how they were labelled, etc. But this method is a good (and cheap) way to take the error for one data set and estimate it for similar data sets with different relative ratios of sentiments.
 
 
 ## Debate Analysis
@@ -302,7 +302,7 @@ Now it's easy to backwards-engineer known trends from data, but these plots cert
 
 ## Final Thoughts
 
-There are some interesting areas for further work. In terms of having a nice, polished product useful for the general public, I would like to make a website like [this one by Go et al](http://www.sentiment140.com). I think it would also be neat to investigate if this model can be used to create something like an electoral map, measuring the sentiment towards a particular candidate in different regions. 
+There are some interesting areas for further work. In terms of having a nice, polished product useful for the general public, I would like to make a website like [this one by Go et al](http://www.sentiment140.com). I think it would also be neat to investigate if this model can be used to create something like an electoral map, measuring the sentiment towards a particular candidate in different regions.
 
 I would also be curious to explore how increasing the model complexity (for example, by moving beyond unigrams) would affect the accuracy, although Go et al claim that this doesn't affect the accuracy by much at all (actually, it decreases it by a bit).
 
@@ -310,11 +310,10 @@ My models clearly have some shortcomings. I am doubtful that the models I have n
 
 
 [comment]: <> (footnotes)
-[^1]: These neutral feeds have anywhere from \\(10^4\\) to \\(10^6\\) total tweets throughout their entire history. If I could download all of these I would have access to a huge number of neutral tweets, but unfortunately Twitter only allows the most recent 3200 tweets to be accessed. So to provide a boost to my data size, I also downloaded the most recent 3200 tweets of each handle at the outset of the data collection process. 
+[^1]: These neutral feeds have anywhere from \\(10^4\\) to \\(10^6\\) total tweets throughout their entire history. If I could download all of these I would have access to a huge number of neutral tweets, but unfortunately Twitter only allows the most recent 3200 tweets to be accessed. So to provide a boost to my data size, I also downloaded the most recent 3200 tweets of each handle at the outset of the data collection process.
 [^2]: As I wrote this a thought occurred to me which is that not all languages have words separated by spaces, a good example is [Thai](http://www.thai-language.com/ref/breaking-words). To take an explicit realization of this, เด็กผู้ชายกินขนมปัง translates to "The boy is eating bread.", but appears as a continuous character string without spaces. A second complication is that, as in other languages like German, words can be combined (without spaces) to form new words. Therefore extending this method to tweets in certain non-Western languages therefore presents a unique challenge. In the course of writing this blog I discovered that this is actually an ongoing area of research.
 [^3]: Funnily enough, this paper is building off a method from an earlier set of papers by a group of authors that includes Robert Mercer, who is playing an important role in this election as Trump's biggest financial backer.
 [^4]: Due to the Twitter Terms of Service, Sanders Analytics weren't able to store the tweets on their website, so instead they stored a list of tweet id's and the sentiment assignments, and also provided a script to download the tweets automatically. Unfortunately, this website was made long enough ago that Twitter changed the requirements for interacting with the API, and now the interaction must be authenticated. Therefore the code they provide to download the tweets does not work, but it isn't too hard to refurbish it. A second point is that some of their tweets are classified as irrelevant, for example many non-English tweets are included. The number I quoted applies to the set of positive/neutral/negative tweets, with these irrelevant tweets deleted.
 [^5]: To make matters even more confusing, on their [website](http://www.sentiment140.com) they classify tweets into *three* classes even though their model can only handle the +/- classes. An easy way to do this without building a new model would be to only classify the tweet as +/- if the probability for either +/- was greater than some threshold (say 50%), and to otherwise classify it as neutral. It's unclear what exactly they are doing, and I sent them an email but haven't heard back.
 
 {% include disqus.html %}
-
