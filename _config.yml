@@ -80,11 +80,11 @@ analytics:
 
 # Site Author
 author:
-  name             : "Your Sidebar Name"
-  avatar           : "headshot_cambridge.jpg"
-  bio              : "Your biography for the left-hand sidebar"
+  name             : "Gavin Hartnett"
+  avatar           : "hartnett_gavin_web.jpg"
+  bio              : "Theoretical Physicist and Machine Learning Researcher"
   location         : "San Francisco, CA"
-  employer         :
+  employer         : "RAND Corporation"
   pubmed           : #"https://www.ncbi.nlm.nih.gov/pubmed/?term=john+snow"
   googlescholar    : "https://scholar.google.com/citations?user=Sv9i0lwAAAAJ&hl=en"
   email            :
@@ -102,8 +102,8 @@ author:
   instagram        :
   impactstory      : #"https://profiles.impactstory.org/u/xxxx-xxxx-xxxx-xxxx"
   lastfm           :
-  linkedin         :
-  orcid            : "http://orcid.org/0000-0002-6814-1809"
+  linkedin         : #"gavinhartnett"
+  orcid            : #"http://orcid.org/0000-0002-6814-1809"
   pinterest        :
   soundcloud       :
   stackoverflow    : # http://stackoverflow.com/users/123456/username
