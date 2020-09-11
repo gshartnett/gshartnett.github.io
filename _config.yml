@@ -81,14 +81,14 @@ analytics:
 # Site Author
 author:
   name             : "Gavin Hartnett"
-  avatar           : "hartnett_gavin_web.jpg"
+  avatar           : "hartnett_gavin_web.png"
   bio              : "Theoretical Physicist and Machine Learning Researcher"
   location         : "San Francisco, CA"
   employer         : "RAND Corporation"
   pubmed           : #"https://www.ncbi.nlm.nih.gov/pubmed/?term=john+snow"
   googlescholar    : "https://scholar.google.com/citations?user=Sv9i0lwAAAAJ&hl=en"
   email            :
-  researchgate     : "https://www.researchgate.net/profile/Gavin_Hartnett"
+  researchgate     : #"https://www.researchgate.net/profile/Gavin_Hartnett"
   uri              :
   bitbucket        :
   codepen          :
