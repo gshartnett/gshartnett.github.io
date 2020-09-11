@@ -13,7 +13,7 @@ main:
   #  url: /portfolio/
         
   - title: "CV"
-    url: /cv/
+    url: /files/Hartnett_CV.pdf
             
   - title: "Blog Posts"
     url: /year-archive/

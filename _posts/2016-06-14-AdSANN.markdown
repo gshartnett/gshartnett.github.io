@@ -12,7 +12,7 @@ First, let me comment on the title. I would argue that one of the most profound 
 
 #{% include image.html url="/assets/AdSANN/escher.jpg" description="Notice how an infinite number of fish (or newts, or whatever they are) can be fit inside the disk. <br><br>" %}
 <p align="center">
-    <img src="/assets/AdSANN/escher.jpg" width="50%" height="50%"/>
+    <img src="/assets/AdSANN/escher.jpg"/>
 </p>
 
 The other ingredient in the AdS/CFT correspondence is CFT, which stands for conformal field theory. Quantum field theories basically describe all of known physics which the exception of gravity, which has proven very hard to quantize, and conformal field theories have a special symmetry which is a generalization of scale invariance. AdS/CFT is a *duality* between these two very different types of theories--even though they look completely unrelated they are apparently describing the same underlying physics!
@@ -33,7 +33,7 @@ because it is simple and shows up the elementary machine learning technique of l
 
 #{% include image.html url="/assets/AdSANN/sigmoid.png" description="The logistic function <br><br>" %}
 <p align="center">
-    <img src="/assets/AdSANN/sigmoid.png" width="50%" height="50%"/>
+    <img src="/assets/AdSANN/sigmoid.png"/>
 </p>
 
 There are many types of neural networks, and they can be used in a wide variety of applications. In this article I want to focus on the a relatively simple kind of network that is nonetheless complex enough to overcome the criticisms of Minsky and Papert.
@@ -48,7 +48,7 @@ The MNIST data set, along with benchmarks of various publications can be found [
 
 #{% include image.html url="/assets/AdSANN/MNISTexample.png" description="" %}
 <p align="center">
-    <img src="/assets/AdSANN/MNISTexample.png" width="50%" height="50%"/>
+    <img src="/assets/AdSANN/MNISTexample.png"/>
 </p>
 
 The first step in solving a problem like this is familiar from physics; the problem needs to be translated into mathematical language in some way. In this case, the key is to represent the image as 28x28 matrix (or later as a 784-element flattened vector):
@@ -126,7 +126,7 @@ The solution to this problem is simple--just find the \\( \theta \\)'s for which
 
 #{% include image.html url="/assets/AdSANN/linearregression.png" description="Standard linear regression for noisy data <br><br>" %}
 <p align="center">
-    <img src="/assets/AdSANN/linearregression.png" width="50%" height="50%"/>
+    <img src="/assets/AdSANN/linearregression.png"/>
 </p>
 
 This doesn't seem to be very closely related to the problem of image classification, where the \\( y \\) were not real numbers but instead elements of a discrete set. The classification analog of linear regression is known as [logistic regression](https://en.wikipedia.org/wiki/Logistic_regression). The set-up for logistic regression in the simplest case of a binary output \\( y \in \\{ 0, 1 \\} \\) is as follows. What is fitted is not
@@ -160,7 +160,7 @@ The way the neural network takes a 784-dimensional input and returns this 10-dim
 
 #{% include image.html url="/assets/AdSANN/NNdrawer-pics-pdf-291x300.jpg" description="A simple feed-forward Artificial Neural Network <br><br>" %}
 <p align="center">
-    <img src="/assets/AdSANN/NNdrawer-pics-pdf-291x300.jpg" width="50%" height="50%"/>
+    <img src="/assets/AdSANN/NNdrawer-pics-pdf-291x300.jpg"/>
 </p>
 
 In equations, this reads
@@ -193,7 +193,7 @@ One thing that I became really hung-up on throughout this process was the conver
 
 #{% include image.html url="/assets/AdSANN/trainingcost.png" description="Training cost J of the neural network during gradient descent <br><br>" %}
 <p align="center">
-    <img src="/assets/AdSANN/trainingcost.png" width="50%" height="50%"/>
+    <img src="/assets/AdSANN/trainingcost.png"/>
 </p>
 
 The curve is not monotonically decreasing because in this particular run I took a fairly aggressive training strategy where the learning rate \\( \alpha \\) is initially quite high. There is a bit of an art to choosing the right learning rate \\( \alpha \\). Too high and you'll risk overshooting minima, and too low and the training will take forever. So here I decided to set alpha to be recklessly high, and then to decrease it every time the cost function increased, indicating that I overshot. I also periodically decayed the learning rate, which from what I've read is good general practice. From the plot it seems clear that if I let the code run longer the cost would barely decrease at all.
@@ -212,7 +212,7 @@ In reading and watching online talks about neural networks, you'll often hear ab
 
 #{% include image.html url="/assets/AdSANN/falsevacuum.png" description="Vacuum decay: in quantum mechanics the system can tunnel from local minima to the true, global minimum. <br><br>" %}
 <p align="center">
-    <img src="/assets/AdSANN/falsevacuum.png" width="50%" height="50%"/>
+    <img src="/assets/AdSANN/falsevacuum.png"/>
 </p>
 
 Fortunately, the problem of local minima in the context of neural network machine learning isn't quite so dire! At some point when my code wasn't converging, I threw up my hands and said "well, it must be the local minima". But if a local minimum was really reached, then the code should converge! I began to dig around, and I think I found the source of the problem in this lovely paper[^5] which in turn built upon the results of this paper on random matrix theory of Bray and Dean[^6]. I highly recommend these papers to anyone from a physics background interested in machine learning.
@@ -227,7 +227,7 @@ If all the eigenvalues are positive (negative) then the critical point is a glob
 
 #{% include image.html url="/assets/AdSANN/coinflip.gif" description="What are the odds of flipping heads 266,610 out of 266,610 times? Not good, kiddo. <br><br>" %}
 <p align="center">
-    <img src="/assets/AdSANN/coinflip.gif" width="50%" height="50%"/>
+    <img src="/assets/AdSANN/coinflip.gif"/>
 </p>
 
 Armed with this result, let me return to my convergence issue. So the problem can't be that I got stuck in a local minima, because the gradient descent didn't converge, and in light of the above results, most critical points are in fact saddles anyhow. So the working-intuition that I've developed is that the landscape of the cost function \\( J \\) is apparently characterized by what you might call very shallow riverbeds, where there are steep uphill gradients in some directions, but the downhill gradients are very shallow. So it could just take a very very long time for gradient descent to actually converge. I admit that I haven't thought much about the landscapes of functions in high dimensional spaces, and certainly not about the intricacies of neural network machine learning, and I'm sure that there are important results I'm unaware of.
