@@ -2,7 +2,7 @@
 layout: post
 title:  "The AdS/ANN Correspondence"
 date:   2016-06-12 17:02:02 +0100
-categories: 
+categories:
 comments: true
 ---
 
@@ -10,11 +10,14 @@ This post is about Artificial Neural Networks (or just neural networks for short
 
 First, let me comment on the title. I would argue that one of the most profound scientific discoveries in my lifetime has been the [AdS/CFT Correspondence](https://en.wikipedia.org/wiki/AdS/CFT_correspondence) which is a duality, or equivalence between two very different types of theories. Here AdS stands for Anti-de Sitter space, the maximally symmetric negatively curved spacetime. This sounds like a mouthful but the idea is very simple--it’s basically the spacetime analog of a hyperbolic space in the same way that Minkowski space is the spacetime analog of flat Euclidean space \\( \mathbb{R}^4 \\). An example of a negatively curved space is depicted in this M.C. Escher painting
 
-{% include image.html url="/assets/AdSANN/escher.jpg" description="Notice how an infinite number of fish (or newts, or whatever they are) can be fit inside the disk. <br><br>" %}
+#{% include image.html url="/assets/AdSANN/escher.jpg" description="Notice how an infinite number of fish (or newts, or whatever they are) can be fit inside the disk. <br><br>" %}
+<p align="center">
+    <img src="/assets/AdSANN/escher.jpg" width="50%" height="50%"/>
+</p>
 
 The other ingredient in the AdS/CFT correspondence is CFT, which stands for conformal field theory. Quantum field theories basically describe all of known physics which the exception of gravity, which has proven very hard to quantize, and conformal field theories have a special symmetry which is a generalization of scale invariance. AdS/CFT is a *duality* between these two very different types of theories--even though they look completely unrelated they are apparently describing the same underlying physics!
 
-Ok, so I thought this article was about neural networks, not AdS/CFT? A major theme in theoretical physics in the past two decade or so has been dualities, of which AdS/CFT is one example, where two very different systems are shown to be equivalent [^1]. These dualities are such that often a hard problem on one side of the duality becomes easy on the other, and have therefore proven immensely useful. The number of dualities is growing at a such a rapid rate that it can sometimes seem whimsical. For example, there are the AdS/CMT (Condensed Matter Theories), AdS/bCFT (boundary CFT), Kerr/CFT, and dS/CFT (de Sitter) correspondences. I'm sure I've left some ones out. There is even a connection (though not quite at the level of a duality) between [quantum error correction](https://en.wikipedia.org/wiki/Quantum_error_correction) and AdS/CFT, which has been called AdS/QEC [^2]. 
+Ok, so I thought this article was about neural networks, not AdS/CFT? A major theme in theoretical physics in the past two decade or so has been dualities, of which AdS/CFT is one example, where two very different systems are shown to be equivalent [^1]. These dualities are such that often a hard problem on one side of the duality becomes easy on the other, and have therefore proven immensely useful. The number of dualities is growing at a such a rapid rate that it can sometimes seem whimsical. For example, there are the AdS/CMT (Condensed Matter Theories), AdS/bCFT (boundary CFT), Kerr/CFT, and dS/CFT (de Sitter) correspondences. I'm sure I've left some ones out. There is even a connection (though not quite at the level of a duality) between [quantum error correction](https://en.wikipedia.org/wiki/Quantum_error_correction) and AdS/CFT, which has been called AdS/QEC [^2].
 
 So, continuing in this tradition, it is natural (and probably inevitable) to consider a connection between neural networks and quantum gravity, and let’s just call this still-under-development-connection the AdS/ANN correspondence for fun. In my quest to understand neural networks from a physicist's point of view I haven't been able to think of a concrete connection to AdS/CFT or gravity, and so my title is a bit of a joke, but as we will see, there *are* some interesting connections with other areas of physics, in particular spin-glasses.
 
@@ -28,7 +31,10 @@ $$ \sigma(x) = \frac{1}{1+ \exp(-x) } \, $$
 
 because it is simple and shows up the elementary machine learning technique of logistic regression. There are plenty of other acceptable choices, such as the \\( tanh(x) \\) function. The logistic function does not actually yield the best performance but it is very simple.
 
-{% include image.html url="/assets/AdSANN/sigmoid.png" description="The logistic function <br><br>" %}
+#{% include image.html url="/assets/AdSANN/sigmoid.png" description="The logistic function <br><br>" %}
+<p align="center">
+    <img src="/assets/AdSANN/sigmoid.png" width="50%" height="50%"/>
+</p>
 
 There are many types of neural networks, and they can be used in a wide variety of applications. In this article I want to focus on the a relatively simple kind of network that is nonetheless complex enough to overcome the criticisms of Minsky and Papert.
 
@@ -40,7 +46,10 @@ As best I can tell, the "harmonic oscillator" for neural networks is a feed-forw
 
 The MNIST data set, along with benchmarks of various publications can be found [here](http://yann.lecun.com/exdb/mnist/). The statement of the problem is: given a 28x28 pixel gray-scale image of a handwritten number 0-9, where each pixel is a number from 0 to 255 indicating the intensity, correctly identify the number as often as possible. Here is a typical image:
 
-{% include image.html url="/assets/AdSANN/MNISTexample.png" description="" %}
+#{% include image.html url="/assets/AdSANN/MNISTexample.png" description="" %}
+<p align="center">
+    <img src="/assets/AdSANN/MNISTexample.png" width="50%" height="50%"/>
+</p>
 
 The first step in solving a problem like this is familiar from physics; the problem needs to be translated into mathematical language in some way. In this case, the key is to represent the image as 28x28 matrix (or later as a 784-element flattened vector):
 
@@ -115,9 +124,12 @@ $$ J(\theta_0, \theta_1) = \frac{1}{N} \sum_{i=1}^N \left(y_i - y(x_i) \right)^2
 
 The solution to this problem is simple--just find the \\( \theta \\)'s for which the derivatives with respect to the \\( \theta \\)'s vanishes, and this will be the minimum. J can be thought of as a Hamiltonian for a point particle in a potential well, and the goal is to find the minimal energy configuration. The result might look something like this
 
-{% include image.html url="/assets/AdSANN/linearregression.png" description="Standard linear regression for noisy data <br><br>" %}
+#{% include image.html url="/assets/AdSANN/linearregression.png" description="Standard linear regression for noisy data <br><br>" %}
+<p align="center">
+    <img src="/assets/AdSANN/linearregression.png" width="50%" height="50%"/>
+</p>
 
-This doesn't seem to be very closely related to the problem of image classification, where the \\( y \\) were not real numbers but instead elements of a discrete set. The classification analog of linear regression is known as [logistic regression](https://en.wikipedia.org/wiki/Logistic_regression). The set-up for logistic regression in the simplest case of a binary output \\( y \in \\{ 0, 1 \\} \\) is as follows. What is fitted is not 
+This doesn't seem to be very closely related to the problem of image classification, where the \\( y \\) were not real numbers but instead elements of a discrete set. The classification analog of linear regression is known as [logistic regression](https://en.wikipedia.org/wiki/Logistic_regression). The set-up for logistic regression in the simplest case of a binary output \\( y \in \\{ 0, 1 \\} \\) is as follows. What is fitted is not
 \\( y \\) directly, but rather the conditional probability \\( \mathbb{P} \left(y^i = 1 \big| x^i \right) \\), the probability that the data point corresponds to 1 given the data point \\( x^i \\). If this quantity is \\( \gt 1/2 \\) then the most likely output is 1, otherwise it is 0. The way this works in formulae is that
 
 $$ p^i \equiv\mathbb{P} \left(y^i = 1 \big| x^i \right) = \sigma (\theta_0 + \theta_1 x^i) \, , $$
@@ -146,21 +158,24 @@ Unlike logistic regression, the entries \\(p_k^i\\) (with \\(k = 1...10 \\) ) ar
 
 The way the neural network takes a 784-dimensional input and returns this 10-dimensional output is a just a series of matrix multiplications followed by the application of the sigmoid activation function. This process is most conveniently described pictorially:
 
-{% include image.html url="/assets/AdSANN/NNdrawer-pics-pdf-291x300.jpg" description="A simple feed-forward Artificial Neural Network <br><br>" %}
+#{% include image.html url="/assets/AdSANN/NNdrawer-pics-pdf-291x300.jpg" description="A simple feed-forward Artificial Neural Network <br><br>" %}
+<p align="center">
+    <img src="/assets/AdSANN/NNdrawer-pics-pdf-291x300.jpg" width="50%" height="50%"/>
+</p>
 
 In equations, this reads
 
-$$ \begin{align} 
+$$ \begin{align}
 & \text{(input layer):} \qquad a^{(1)}_{ij} = x^{(i)}_j, \\
 & \text{(hidden layer):} \qquad z^{(2)}_{ij} = \sum_m^{M+1} \Theta^{(1)}_{im} \tilde{a}^{(1)}_{mj}, \qquad a^{(2)}_{ij} = \sigma( z^{(2)}_{ij}) \, , \\
-& \text{(output layer):} \qquad z^{(3)}_{ij} = \sum_p^{P+1} \Theta^{(2)}_{ip} \tilde{a}^{(2)}_{pj}, \qquad p^i_k = a^{(3)}_{ki} = \sigma( z^{(3)}_{ki}) \, . 
+& \text{(output layer):} \qquad z^{(3)}_{ij} = \sum_p^{P+1} \Theta^{(2)}_{ip} \tilde{a}^{(2)}_{pj}, \qquad p^i_k = a^{(3)}_{ki} = \sigma( z^{(3)}_{ki}) \, .
 \end{align} $$
 
-Here \\(M \\) is the dimension of the input, 784 in this case, \\(P \\) is the number of neurons in the hidden layer, and \\( K \\) is the number of distinct classes, 10 in this case. The way to translate between the diagram and the equation is as follows. The first layer of nodes represents the input data, \\( x^i \\), with a node for each entry in the M-element vector in the diagram. The lines connecting the first layer of nodes to the second are parameters of the network known as weights. These are conveniently lumped into a matrix \\( \Theta^{(1)} \\). After matrix multiplication by the weights, the sigmoid activation function \\( \sigma \\) is applied to each output, introducing a certain type of non-linearity. This intermediate output then undergoes another round of matrix multiplication (this time by \\( \Theta^{(2)} \\)), followed by yet another application of \\( \sigma \\). Finally, we arrive at the output \\( p_k \\). 
+Here \\(M \\) is the dimension of the input, 784 in this case, \\(P \\) is the number of neurons in the hidden layer, and \\( K \\) is the number of distinct classes, 10 in this case. The way to translate between the diagram and the equation is as follows. The first layer of nodes represents the input data, \\( x^i \\), with a node for each entry in the M-element vector in the diagram. The lines connecting the first layer of nodes to the second are parameters of the network known as weights. These are conveniently lumped into a matrix \\( \Theta^{(1)} \\). After matrix multiplication by the weights, the sigmoid activation function \\( \sigma \\) is applied to each output, introducing a certain type of non-linearity. This intermediate output then undergoes another round of matrix multiplication (this time by \\( \Theta^{(2)} \\)), followed by yet another application of \\( \sigma \\). Finally, we arrive at the output \\( p_k \\).
 
 You might be wondering what the tilde's stand for, what the "\\( + 1 \\)"'s stand for in the diagram, or why the sum limits are increased by 1. This is because at each layer (except the last layer) I have introduced what is known as a bias unit for the same reason that the constant term is included in linear and logistic regression.
 
-This is known as a feed-forward ANN. I chose to work with 1 hidden layer here for simplicity, but the number of such layers is completely arbitrary, as is the number of units in each hidden layer. At the end of the day, this network just describes a certain parametric family of non-linear functions, albeit one that has proven very useful for many machine learning applications. 
+This is known as a feed-forward ANN. I chose to work with 1 hidden layer here for simplicity, but the number of such layers is completely arbitrary, as is the number of units in each hidden layer. At the end of the day, this network just describes a certain parametric family of non-linear functions, albeit one that has proven very useful for many machine learning applications.
 
 Having described the class of functions parametrized by neural networks, I'll turn now to the hard part, which is finding a choice of the weights so that the network does a good job of classifying images. The cost function I'll use is the straightforward generalization of the cross-entropy for the binary classification problem
 
@@ -176,11 +191,14 @@ I implemented a neural network like the kind discussed here There are 60,000 lab
 
 One thing that I became really hung-up on throughout this process was the convergence of the gradient descent training procedure. The code *never seemed to converge*. Perhaps I just wasn't running it for long enough. Here's a typical plot of the training cost \\( J \\) throughout the training
 
-{% include image.html url="/assets/AdSANN/trainingcost.png" description="Training cost J of the neural network during gradient descent <br><br>" %}
+#{% include image.html url="/assets/AdSANN/trainingcost.png" description="Training cost J of the neural network during gradient descent <br><br>" %}
+<p align="center">
+    <img src="/assets/AdSANN/trainingcost.png" width="50%" height="50%"/>
+</p>
 
 The curve is not monotonically decreasing because in this particular run I took a fairly aggressive training strategy where the learning rate \\( \alpha \\) is initially quite high. There is a bit of an art to choosing the right learning rate \\( \alpha \\). Too high and you'll risk overshooting minima, and too low and the training will take forever. So here I decided to set alpha to be recklessly high, and then to decrease it every time the cost function increased, indicating that I overshot. I also periodically decayed the learning rate, which from what I've read is good general practice. From the plot it seems clear that if I let the code run longer the cost would barely decrease at all.
 
-At first I was worried that this was a bug and tried all sorts of learning strategies, and let the code run for really long periods of time. I even checked that I was calculating the gradients correctly via back-propagation by comparing them to the gradients obtained by simple finite differencing, i.e. 
+At first I was worried that this was a bug and tried all sorts of learning strategies, and let the code run for really long periods of time. I even checked that I was calculating the gradients correctly via back-propagation by comparing them to the gradients obtained by simple finite differencing, i.e.
 
 $$ \frac{d J}{d\theta} = \frac{J(\theta + h) - J(\theta - h)}{2h} + O(h^2) \, , $$
 
@@ -192,7 +210,10 @@ In reading and watching online talks about neural networks, you'll often hear ab
 
 *This is disheartening. The possibility that we are living in a false vacuum has never been a cheering one to contemplate. Vacuum decay is the ultimate ecological catastrophe; in a new vacuum there are new constants of nature; after vacuum decay, not only is life as we know it impossible, so is chemistry as we know it. However, one could always draw stoic comfort from the possibility that perhaps in the course of time the new vacuum would sustain, if not life as we know it, at least some structures capable of knowing joy. This possibility has now been eliminated.*
 
-{% include image.html url="/assets/AdSANN/falsevacuum.png" description="Vacuum decay: in quantum mechanics the system can tunnel from local minima to the true, global minimum. <br><br>" %}
+#{% include image.html url="/assets/AdSANN/falsevacuum.png" description="Vacuum decay: in quantum mechanics the system can tunnel from local minima to the true, global minimum. <br><br>" %}
+<p align="center">
+    <img src="/assets/AdSANN/falsevacuum.png" width="50%" height="50%"/>
+</p>
 
 Fortunately, the problem of local minima in the context of neural network machine learning isn't quite so dire! At some point when my code wasn't converging, I threw up my hands and said "well, it must be the local minima". But if a local minimum was really reached, then the code should converge! I began to dig around, and I think I found the source of the problem in this lovely paper[^5] which in turn built upon the results of this paper on random matrix theory of Bray and Dean[^6]. I highly recommend these papers to anyone from a physics background interested in machine learning.
 
@@ -204,7 +225,10 @@ If all the eigenvalues are positive (negative) then the critical point is a glob
 
 "This is all very nice, but what does this have to do with neural networks?", you ask. Well, the neural network problem is naturally a high-dimensional problem. The cost function \\( J \\) is a function of the \\(\Theta^{(\ell)} \\) matrices, and for the neural network I trained for this problem, with 2 hidden layers of 300 and 100 units each, the number of parameters in these matrices is 266,610. Now, to be fair, the cost function of a neural network is almost certainly not a gaussian random field, but I see no reason that the statistics of its critical points should behave qualitatively differently than above. I would expect that the assumption of a gaussian-distributed random field is mainly meant to make the problem tractable. This was also Dauphin et al's expectation, and they verified empirically that the same phenomena observed in the Bray & Dean paper is exhibited by neural networks.
 
-{% include image.html url="/assets/AdSANN/coinflip.gif" description="What are the odds of flipping heads 266,610 out of 266,610 times? Not good, kiddo. <br><br>" %}
+#{% include image.html url="/assets/AdSANN/coinflip.gif" description="What are the odds of flipping heads 266,610 out of 266,610 times? Not good, kiddo. <br><br>" %}
+<p align="center">
+    <img src="/assets/AdSANN/coinflip.gif" width="50%" height="50%"/>
+</p>
 
 Armed with this result, let me return to my convergence issue. So the problem can't be that I got stuck in a local minima, because the gradient descent didn't converge, and in light of the above results, most critical points are in fact saddles anyhow. So the working-intuition that I've developed is that the landscape of the cost function \\( J \\) is apparently characterized by what you might call very shallow riverbeds, where there are steep uphill gradients in some directions, but the downhill gradients are very shallow. So it could just take a very very long time for gradient descent to actually converge. I admit that I haven't thought much about the landscapes of functions in high dimensional spaces, and certainly not about the intricacies of neural network machine learning, and I'm sure that there are important results I'm unaware of.
 
@@ -350,7 +374,7 @@ $$ y = \sigma\left( \theta_0 + \theta_1 x \right) $$
 
 if the sigmoid function ever showed up in a physics context, you wouldn't argue that there is a deep connection between logistic regression and physics, just that the same class of function shows up in both.
 
-That being said, I have come to learn that there are some connections. First of all, neural networks have been successfully used in at least one observational/experimental context, which is classifying galaxies. I think this is actually a very exciting connection that is going to continue to grow in all science disciplines as more data and computing power becomes available. In this post I'm more interested with theoretical connections. 
+That being said, I have come to learn that there are some connections. First of all, neural networks have been successfully used in at least one observational/experimental context, which is classifying galaxies. I think this is actually a very exciting connection that is going to continue to grow in all science disciplines as more data and computing power becomes available. In this post I'm more interested with theoretical connections.
 
 From what I can gather, the most well-established connection is with condensed matter systems known as a spin-glasses [^7] [^8]. Spin-glasses are magnetic systems in which the magnetic spins are not aligned, but instead possess a disorder reminiscent of glasses. The key feature is that the spins are frustrated, or constrained, so that there is an interesting competition of effects leading to this unconventional phase of matter. After learning about the above result of Bray and Dean, the connection between spin-glasses and neural networks intrigues and confuses me a bit because I have heard often that spin-glasses have lots of metastable minima (this is another physics term for local minima) and very slowly relax to the configuration of lowest energy as a result of thermal fluctuations. If this is true, then they somehow avoid the Bray-Dean result that almost all critical points are saddles. One obvious possibility is that the assumption of gaussianity is far more restrictive than my intuition led me to believe. Perhaps it's worth pointing out that the Bray-Dean result is relatively recent, and so there very well might be more to this story than has been explored thus far, and I think this might be an interesting road to go down. Maybe as a last point it is worth mentioning that for certain spin-glasses, the problem of relaxation to the ground state has been shown to be NP-hard [^9], and so it would be very interesting to understand just how these two systems relate to one another.
 
@@ -372,5 +396,3 @@ So perhaps it's time to wrap this up. Unfortunately, I do not see any hope (yet)
 [^11]: Hornik, K. et al [Multilayer feedforward networks are universal approximators](http://www.sciencedirect.com/science/article/pii/0893608089900208)
 
 {% include disqus.html %}
-
-
