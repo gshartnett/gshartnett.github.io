@@ -1,0 +1,320 @@
+---
+layout: post
+title:  "Twitter, Entropy, and U.S. Presidential Politics"
+date:   2016-10-23 00:00:00 +0000
+categories: 
+comments: true
+---
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@SurgicalCMDR">
+<meta name="twitter:creator" content="@SurgicalCMDR">
+<meta name="twitter:title" content="Twitter, Entropy, and U.S. Presidential Politics">
+<meta name="twitter:description" content="My attempt to use sentiment analysis and NLP to understand the 2016 presidential debates">
+<meta name="twitter:image" content="http://gshartnett.github.io/assets/twitter/boltzmann.png">
+
+<p align="center">
+    <img src="/assets/twitter/boltzmann.png" width="50%" height="50%"/>
+</p>
+
+### Table of Contents
+**[Introduction](#introduction)**  
+**[Sentiment Classification](#sentiment-classification)**  
+**[Data Preprocessing](#data-preprocessing)**  
+**[Machine Learning Algorithms](#machine-learning-algorithms)**  
+**[Training and Evaluation](#training-and-evaluation)**  
+**[Debate Analysis](#debate-analysis)**  
+**[Final Thoughts](#final-thoughts)**  
+
+
+## Introduction
+
+On June 23, the United Kingdom held a referendum on continued membership of the European Union. The political drama of the infamous Brexit vote was particularly exhilarating for me because I happen to be currently living in the UK as a physics postdoc. I watched as Brexit grew from what seemed to be a fringe issue, quickly dismissed by my British colleagues, to an issue supported by about half of the population. One thing that shocked me was the disconnect between polling and "expert sentiment". Betting markets and many pundits felt that the Remain camp would prevail, and yet on the week of the vote the race was tight enough that the polls couldn't resolve which side was in the lead. Watching the chaos in the London financial sector and the nose dive of the pound the day after the vote left a strong impression on me -- how could one of two roughly equally likely outcomes, outcomes which were so important to the well-being of the United Kingdom, and even the wider European Union, have come as such a shock to so many experts? It seemed to me that the likelihood of Brexit was severely underestimated. 
+
+After the rush of experiencing Brexit first hand, my attention turned to the 2016 US presidential election, which had recently entered the general election stage with the RNC convention occurring just days before. Since then, I have been completely consumed by the election, obsessively checking [538](http://fivethirtyeight.com/) and Twitter multiple times a day. I think it's a muted understatement to say that 2016 has been a wild ride for anyone paying attention to politics, and especially so for a junkie such as myself. After one too many days of being flabbergasted by political developments I had thought were unlikely based on my understanding of politics, I started to wonder if there might be room to apply some of the machine learning and data science techniques I had been learning about in my spare time to political polling. I had just read Nate Silver's wonderful book, "The Signal and the Noise: The Art and Science of Prediction", which impressed upon me that polling is a very difficult and complicated task that requires very careful selection of respondents, features delays of a few days, and relies on what seemed to me to be very small sample sizes.
+
+In this blog post I want to begin to explore an alternate model for political polling that ditches carefully selected polling samples and instead utilizes vast amounts of publicly available information on social media platforms such as Twitter to do real time polling. In this [wonderful article](http://static.googleusercontent.com/media/research.google.com/en//pubs/archive/35179.pdf) by Halevy, Norvig, and Pereira of Google, they emphasize that in many cases, simple models with a lot of data can beat out complicated models with less data. Could something of this flavor apply to polling? After all, each day there is a tremendous amount of activity on the internet regarding current political events, if one could develop a way to use this information to gain a sense of the distribution of opinions in real time, then perhaps this could lead to improved political forecasts.
+
+This idea is sufficiently general that I'm not the first to think of it, but I was interested enough to tinker around and see what I could work out. I settled on the idea of using Twitter to try to gain some insight to the US presidential election. I found a paper, [Twitter Sentiment Classification using Distant Supervision](http://cs.stanford.edu/people/alecmgo/papers/TwitterDistantSupervision09.pdf) by Go, Bhayani, and Huang which really inspired me. I decided to expand on it by incorporating a new idea of my own and to apply the resulting model to the US presidential debates between Hillary Clinton and Donald Trump. 
+
+This project is in very exploratory, and I think there are many interesting directions to pursue. The code associated with this project can be found on Github [here](https://github.com/gshartnett/twitter-classification). 
+
+
+## Sentiment Classification
+
+With the above motivation in mind, the concrete problem I decided to tackle was to build a model for Twitter sentiment classification. If one could reliably measure the sentiment of tweets, then this would be extremely useful. In the context of political polling, one could look at tweets mentioning topic/candidate X from time period Y and originating from region Z. Imagine if the reaction to a debate or a speech could be reliably measured *automatically* from state to state, congressional district to congressional district in real time! Obviously, this technique could lead to many commericial applications, but for now I'll focus on the specific problem of looking at the 2016 US presidential debates.
+
+In this section I will first describe some generalities of sentiment classification, and then I'll move on to discussing how I used Twitter's API to download a large collection of tweets with a definite sentiment which I used to train my model.
+
+---
+
+#### Generalities
+
+In order to model the sentiment of tweets, I will make an assumption that undoubtedly oversimplifies the problem, namely that each tweet may be classified as either negative, neutral, or positive. I will use the label \\(s \\) to denote the sentiment value, quantized to be
+
+$$
+s = 
+\begin{cases}
+  -1 \, , & \text{negative} \\
+  0 \, , & \text{neutral} \\
+  +1 \, , & \text{positive}
+\end{cases}
+$$
+
+This model of sentiment is obviously very restrictive, and fails to capture many aspects of language. As a simple illustrative example, consider the sentence "Although I loathe cats, I do like dogs." The sentence contains both a negative sentiment regarding cats and a positive one regarding dogs. It cannot be classified as simply positive or negative, and any attempt to do so would lose the composite structure of the sentence. If one insists on classifying this as negative, neutral, or positive, the temptation might be to "average out" the two sentiments and call it neutral. However, in this example the negative sentiment is more pronounced, so the negative sentiment of "loathing cats" should be weighted more heavily than the positive sentiment of "liking dogs". The simple ternary quantization of \\( s \\) does not capture any of this richness. The upshot is that the problem is now much simpler and therefore more tractable.
+
+Within this simplified framework for sentiment classification, the goal is then to build a model that can with high accuracy correctly predict the sentiment of a tweet. To build such a model, we will need a (preferably) large training data set with lots of tweets whose sentiment has already been labelled by some means. There are two main challenges in acquiring this data. First, the data has to be downloaded from somewhere. Tweets are easy enough to download through Twitter's API, but API is rate-limited which means only so many tweets may be downloaded per unit of time. Therefore, in order to amass a large data set one will need to automate the process so that tweets are being downloaded constantly. I was able to achieve this with a few lines of Python code and crontab (I'm running Linux).
+
+The more challenging aspect is finding a way to obtain labelled data. One option is to do it by hand, but this is a painstaking and slow task, not suitable for data sets of millions of tweets. Even if the labelling task could be crowd-sourced in some clever way, the sentiment of a tweet isn't obvious and different people might use different definitions. In fact, I haven't defined what sentiment actually is yet and in fact I won't attempt to provide one. Instead I'll adopt a more pragmatic, engineer-style approach where I'll use some simple criteria to find a large set of three distinct types of tweets that should fit most common notions of containing negative/neutral/positive sentiments, and then I'll use these tweets to build a model. I won't ever both to actually confront the philosophical issue of how to define sentiment. 
+
+---
+
+#### Distant Supervision
+
+Many of my ideas for this project came from the [Go et al](http://cs.stanford.edu/people/alecmgo/papers/TwitterDistantSupervision09.pdf) paper mentioned earlier. Actually, this paper isn't even a peer reviewed journal article but merely the write-up of a Stanford Computer Science class project. This fact hasn't stopped the paper from getting more than 1200 citations though! The paper combines many standard techniques for text classification and Natural Language Processing (NLP) and applies them to the problem of classifying tweets. They even built a publicly-available [website](http://www.sentiment140.com) where their model can be applied to a small sample of current tweets about a certain subject in real-time. As a non-expert, I found this paper extraordinarily useful for the way in which it combined many techniques standard to text classification and NLP. According to the authors, the main novel achievement of the paper is the application of something known as distant supervision to the problem of tweet classifications.
+
+Because the goal is to use a large set of labelled tweets to learn a good model for classifying new, unlabelled tweets, this is a supervised learning problem. Distant supervision is a clever way of generating a large set of labelled data. Rather than labelling the data by hand, a stand-in classification criterion is used that agrees with the desired criterion *for the most part*. In the Go et al paper, their idea (building off of other research) is that if a tweet contains an emoticon such as **:)** then it is probably expressing a positive sentiment, and if it contains a tweet like **:(** then it is probably expressing a negative sentiment. Of course, not all positive/negative tweets contain emoticons (if they did, then the problem of sentiment classification would be reduced to just counting emoticons!), but the hope is that most of the emoticon-carrying tweets are positive/negative. More concretely, Go et al considered a set of positive emoticons such as **:)**, **:-)**, and so on, and a set of negative emoticons such as **:(**, **:-(**. Every few minutes they used a query to the Twitter API to automatically download tweets with these emoticons. If a given tweet in the search results contains *only* one type of emoticon, then it is classified as having that type of sentiment, otherwise it is thrown out.
+
+The main drawback with their approach is that it doesn't encompass neutral tweets. There really aren't any neutral emoticons in the way that there are positive/negative ones. By this I mean that although there are plenty of emoticons (or emojis) that do not signify any particular sentiment, there aren't any emoticons whose presence should strongly correlate with the entire tweet being neutral. For example, while appearance of a **:)** means the tweet is likely to be positive, the appearance of the soccer ball emoji ⚽ doesn't tell us much about whether the tweet will be neutral.
+
+I decided to expand on the Go et al approach by incorporating a way to get neutral tweets. My idea was that certain official Twitter handles reliably pump out a high volume of dispassionate, neutral tweets each day. For example, here are the most recent tweets from the New York Times:
+
+<center> <a class="twitter-timeline" data-width="400" data-height="600" href="https://twitter.com/nytimes">Tweets by nytimes</a> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script> </center>
+
+These tweets will (hopefully) appear to be reliably neutral and might therefore be a good way to extend the distant supervision method to neutral tweets. So, every 5 minutes I downloaded 100 tweets by querying Twitter's API for **:)** and 100 treats by querying for **:(**. For the neutral tweets I then compiled a list of about 100 neutral feeds and once a day downloaded the previous day's tweets.[^1] A downside to this approach for neutral tweets is that even with 100 neutral handles, the number of neutral tweets obtainable per day pales in comparison to the number of positive or negative ones. So if I want roughly equal proportions of each sentiment, the neutral tweets are the bottleneck.
+
+
+## Data Preprocessing
+
+Once the tweets have been downloaded, they need to be converted to a format suitable for a machine learning algorithm. The downloaded tweets arrive in the JSON format, which is like an array with many different fields, such as "id", "text", "retweet\_status", etc. Even though tweets are restricted to 140 characters, they actually contain much more information because of the way Twitter links tweets to other tweets in the network. For example, Twitter needs to keep track of whether or not a tweet has been retweeted or replied to, what language the tweet is in, what the geographical coordinates are, etc. For the problem of tweet classification, this metadata will be useful in the first step of preprocessing, in which
+
+    * any duplicates are deleted
+    * any retweets are deleted
+    * non-English tweets are deleted
+
+Duplicates can occur because of the way the API handles queries, and retweets are deleted to avoid giving a retweeted tweet undue weighting. The tweets also need to be "refined" because of the way the Twitter API works. Querying for tweets containing **:)** is similar to a Google search in that tweets with all sorts of things similar to **:)** are returned, including emoticons like **:P** which are not as indicative of positive sentiment as much as they are of sarcasm (unfortunately, my models will not be sophisticated enough to get sarcasm). Also, there's nothing to prevent a pathological tweet that contains both positive and negative emoticons, so these are deleted from the training data. Here are lists of the emoticons I considered to be [positive](https://github.com/gshartnett/twitterclassification/blob/master/emoticons_positive.txt) or [negative](https://github.com/gshartnett/twitterclassification/blob/master/emoticons_negative.txt). Note that non-ASCII characters can be handled.
+
+Let's turn next to the main JSON field of interest, the 140-character-max text of the tweet itself. In this project I made a very common and very strong simplification, which is to treat the text as a "bag of words". This means that the text is broken up into words (separated by spaces) and the order of these words is forgotten.[^2] It is standard practice to further refine this bag of words by removing many of the finer features which do not contain much information. Explicitly, the preprocessing steps taken are:
+
+    * any emoticons are padded by spaces, (e.g. "lame:(" -> "lame", ":(")
+    * the tweets are "refined" as described above   
+    * text is converted to a bag of words (tokenized)
+    * all capital letters are converted to lower case
+    * any html is removed
+    * stop words like "is", "the", "a" are removed
+    * words are lemmatized, (e.g. "stands" -> "stand")
+    * usernames are replaced with the token "usernametoken"
+    * urls are replaced with the token "urltoken"
+    * hashtags are tokenized as in #foobar -> hashtagtokenfoobar
+    * html tags are eliminated
+    * positive emoticons replaced with "posemoticontoken", same for negative
+    * finally, all non [a-z] characters are deleted
+
+Some of the steps may seem overly zealous to you. Certainly this is a sort of coarse-graining in that information is being lost, information that could be useful in determining the sentiment of a tweet. The idea behind all these steps is that if we keep track of all these distinctions, our sample size will be effectively much smaller because number of possible words will be so much greater. If we had an unlimited sample size, there would be no need for such drastic coarse graining. To illustrate the combined effect of all these operations, consider the tweet text:
+
+```I was talking to this guy last night and he was telling me that he is a die hard Spurs fan.  He also told me that he hates LeBron James.```
+
+This is then converted into the unordered list (note that the format u'XXX' is how Python handles general unicode characters):
+
+```[u'wa', u'talking', u'guy', u'last', u'night', u'wa', u'telling', u'die', u'hard', u'spur', u'fan', u'also', u'told', u'hate', u'lebron', u'james']```
+
+The final step is to convert this list of words into something numerical. Suppose we take every single tweet in our labelled training data, and we compile a list of all the distinct words that show up. This list of words is called the *vocabulary* for our model, and a given preprocessed tweet can be characterized by which words in the vocabulary show up and how often. For example the above tweet can be expressed as
+
+```[5, 5, 70, 80, 95, 109, 116, 164, 265, 322, 463, 593, 1265, 2276, 4968, 6781]```
+
+because the 6th most common word ("wa", the lemmatized form of "was") shows up twice, the 71st-most common word ("last") shows up once, and so on (I'm counting in a Pythonic way here, so the most common word is designated 0). We could also express this as a sparse integer valued vector
+
+$$ w_i = 2 \delta_{i,5} + \delta_{i,70} + \delta_{i,80} + ... $$
+
+where \\( \delta_{i,j} \\) is the Kronecker delta. This way, \\( w_i \\) is the number of times word \\( i \\) appears in the document. Now this is starting to look like something we can feed into a machine learning algorithm! 
+
+As of the time of writing this article, I have collected about 2.5 million tweets for the training data. Many of these had to be dropped in the preprocessing stage, after which I had 1.6 million tweets (Go et al also had 1.6 million). However, because of the different rates for collecting the various tweets, the distribution between the three classes is not even. In order to protect my model from bias, I decided to drop tweets so that in the end each class represented 1/3 of the data. After this step the training data consists of about 1 million tweets.
+
+## Machine Learning Algorithms
+
+With the data now preprocessed, I can use my favorite machine learning algorithm. I'll follow Go et al and use Naive Bayes and Maximum Entropy, although they also considered Support Vector Machines. Here I'll give a *very* brief theoretical overview of each model in the hope that this article can be self-contained.
+
+---
+
+#### Naive Bayes
+
+Navie Bayes is just about the simplest algorithm one could use. In the present case, we wish to estimate or model the probability \\( P(c\| d) \\), the probability of document d belonging to class c (in the current case, a document would correspond to a tweet and \\( c \in [-1 , 0, 1] \\)). In Naive Bayes, Bayes' theorem is employed to write this as
+
+$$ P(c | d ) = P(d | c) \frac{P(c)}{P(d)} \, . $$
+
+Next, the thing that is modelled is not the probability on the left hand side that we are directly interested in, but instead the quantities on the right-hand side. Let's consider these one at a time. \\( P(d) \\) is a hard thing to estimate, but we can disregard it because we only care about the class for which \\( P(c \| d ) \\) is largest, \\( P(d) \\) then just provides the overall normalization that affects all classes equally. \\( P(c) \\) can be estimated easily from our data as just the fraction of tweets belonging to class \\( c \\). By design, these are all equal to \\(1/3\\). So, the remaining problem boils down to estimating \\( P(d \| c) \\).
+
+Using the bag of words assumption, the document \\( d \\) is represented as a list of numbers representing which words are present, or alternatively as the sparse vector \\( \vec{w} \\). The conditional probability \\( P( d\|c) \\) then becomes \\( P(w_0, w_1, ..., w_{K-1} \| c ) \\), where \\( K \\) is the number of distinct words in the training data (the size of the vocabulary). By using the [chain rule of probability](https://en.wikipedia.org/wiki/Chain_rule_(probability)), this can be written as
+
+$$ P(w_0, w_1, w_2, ..., w_{K-1} | c ) = P(w_0 | w_1, w_2, ... w_{K-1}, c) P(w_1 | w_2, ... w_{K-1}, c) ... P(w_{K-1} | c ) \, . $$
+
+The major assumption of Naive Bayes is that all the \\( w_i \\) are conditionally independent, so that \\( P_d(w_i \| \prod_{k\neq i} w_k, c) = P_d(w_i \| c) \\), and then the conditional probability we want to model becomes very simply
+
+$$ P(w_0, w_1, w_2, ..., w_{K-1} | c ) = \prod_{i=0}^{K-1} P(w_i | c) \, . $$
+
+We then estimate each individual probability as
+
+$$ P(w_i | c ) = \frac{\text{count}(w_i,c) + \alpha}{\sum_i \left(\text{count}(w_i,c) + \alpha \right)} \, ,$$
+
+where count\\((w\_i,c)\\) is the number of times word \\(i\\) appears among all the class-c training data. The introduction of the parameter \\( \alpha \\) corresponds to what is known as Laplace Smoothing, which helps protect against the case when the classifier encounters a word on test data that did not occur in the training data, in which case the probability would diverge if it weren't for \\( \alpha \\). Often \\(\alpha = 1 \\) is taken, and this is sometimes referred to as *+1 smoothing*.
+
+---
+
+#### Maximum Entropy
+
+Naive Bayes is nice because it's so simple and straightforward to implement -- it only involves counting, and there is no optimization in high dimensional spaces. But Naive Bayes clearly leaves a lot to be desired. A nice illustration of this comes from [Nigam et al](http://www.kamalnigam.com/papers/maxent-ijcaiws99.pdf). Consider the phrase "Buenos Aires" which consists of two words which by themselves should hardly ever show up (in English). But they appear together as "Buenos Aires" every once in awhile, being the name of the Argentinian capital. Because Naive Bayes only utilizes single word counts, it essentially double counts the likelihood of "Buenos Aires" occurring. This motivates looking at more complicated algorithms. Both Naive Bayes and the Maximum Entropy algorithm I'll discuss here suffer from other shortcomings, but I'll leave these issues for another day.
+
+I decided to construct a the Maximum Entropy classifier because of its connection to statistical physics. In fact, the Maximum Entropy classifier relies on the Principle of Maximum Entropy, which was layed out in a beautiful [physics article](http://bayes.wustl.edu/etj/articles/theory.1.pdf) by Jaynes. To boil the idea down to to a punchline, the Principle of Maximum Entropy asserts that the best model for an unknown probability distribution is the one that is the most conservative in terms of introducing additional assumptions or structure. The Maximum Entropy classifier is based around this idea: one searches for a probability distribution that satisfies some set of constraints and maximizes the entropy.
+
+The constraints are observed features of the data. In a physics setting, these would be certain expectation values defining the ensemble. In our case, we'll take these to be word counts among the different classes. Consider
+
+$$ f_{w,c'}(d,c) = 
+\begin{cases}
+  \frac{N(d,w)}{N(d)} \, , & c \neq c' \\
+  0 \, , & c=c'
+\end{cases}
+$$
+
+where \\( N(d,w) \\) is the number of times word \\(w \\) appears in document \\(d\\), and \\( N(d) \\) is the number of words in \\( d\\). The constraints are then 
+
+$$ \sum_d f_{w,c(d)}(d,c(d)) = \sum_{d,c} P(c|d) f_{w,c}(d,c) \, , $$ 
+
+so that the average value of \\( f\\) on the training data matches the value given by the probability distribution \\( P(c\|d)\\) we are solving for. It turns out that the constrained optimization problem presented here is dual to an optimization problem where the distribution is taken to be of the following exponential form,
+
+$$ P(c|d) = \frac{ \exp\left(\sum_{w,c'} \lambda_{w,c'} f_{w,c'}(d,c) \right) }{\sum_c \exp\left(\sum_{w,c'} \lambda_{w,c'} f_{w,c'}(d,c) \right) } $$
+
+and one then preforms the unconstrained optimization of the Log Likelihood,
+
+$$ \ell = \log \left( \prod_d P(c(d)|d) \right) \, . $$
+
+For a justification of this point, and for a more comprehensive discussion of the Maximum Entropy classifier, see [Nigam et al](http://www.kamalnigam.com/papers/maxent-ijcaiws99.pdf) and references therein [^3].
+
+
+## Training and Evaluation
+
+A very important part of building an classification algorithm is evaluating it. You want to make sure it's working well before you go out into the wild and start applying it to real-world, unlabelled data. And it's not enough to see how well the model is doing on the training data; the training data might not generalize well to the gritty data found in the real world, and there is the danger of over-fitting the peculiarities of the training data by overtraining a too flexible model. So, what is needed is a cross-validation (CV) analysis.
+
+I created a CV set from 20% of the training data. I was also fortunate enough to be able to find 2 distinct hand-labelled test sets that I can use after the training is done to evaluate the accuracy of the models. One test set consists of 497 hand labelled tweets by Go et al and is publicly available online, and I'll refer to this as the S140 set. The other set consists of 2624 hand labelled tweets from [Sanders Analytics](http://www.sananalytics.com/lab/twitter-sentiment/)[^4], I'll call this SA for short.
+
+This diverse collection of cross-validation sets is really useful to have. They were all created very differently. The CV set is obtained just as the training data, the S140 set comes from a variety of different queries and was hand-labelled by Go et al, and the SA set came from searching for "Google", "Apple", "Microsoft", or "Twitter" and were hand-labelled by an entirely different group of people, with different intuitive notions of sentiment. Also, they each contain different relative fractions of negative/neutral/positive tweets (more on this below).
+
+---
+
+#### Naive Bayes
+
+Let's first look at the performance of the Naive Bayes model first. The classification accuracy (percentage of correctly identified tweets) for the different CV sets is:
+
+```
++----------+----------+--------------+--------------+--------------+
+| data set | accuracy | (-) accuracy | (0) accuracy | (+) accuracy |
++----------+----------+--------------+--------------+--------------+
+|    CV    |   77.8   |     68.7     |    93.85     |    70.87     |
+|   S140   |  55.73   |    50.28     |    64.75     |    54.14     |
+|    SA    |  51.94   |    33.77     |    57.82     |    46.31     |
++----------+----------+--------------+--------------+--------------+
+```
+
+I've included the accuracy for each sentiment to give a more complete picture into how well the method is working. A few comments are in order. First, the method is working best on the CV set, which is no surprise because that CV set is built from the same data that the model is based on. The model is tailor made for that exact data. The accuracy of the two tes sets (S140 and SA) is worse, which is to be expected. Interestingly enough, it seems that neutral tweets are the hardest to classify correctly.
+
+
+---
+
+#### Maximum Entropy
+
+Let's turn to the Maximum Entropy classifier. This one is a little more complicated, because we have to actually train the model, which means finding the set of parameters \\( \lambda\_{w,c'} \\) such that the log likelihood is maximized. It turns out that this problem is \\(\cap\\)-convex, and so there are no local maxima and simple gradient ascent is guaranteed to converge to the global maximum provided the initial increment is small enough. Training the model is actually a bit tricky, for a few reasons. First, the numbers involved are so large -- I have of the order \\( 10^6 \\) tweets and \\( 10^5 \\) distinct words in my vocabulary, which means that any matrices or vectors needed for the optimization are very large. Fortunately, however, most tweets only contain a few words, so although the linear algebra objects involved in the model have huge dimensions, many of the worst offenders are sparse. The second difficult aspect is the maximization proceedure. Even though the problem is \\(\cap\\)-convex, finding a learning rate that is not too large and capable of converging in a reasonable amount of time is a bit tricky. And third, now that we are training a model, there is a danger of over-fitting. To combat this I'll use an L2 regulator, which amounts to adding the term \\( -\beta \sum\_{w,c'} \lambda\_{w,c'}^2 \\) to the *training* log likelihood (not the CV log likihood). The CV set will then be used to find the optimal value of \\( \beta \\). This is depicted below:
+
+{% include image.html url="/assets/twitter/MaxEnt_gradient_ascent.png" description="(Left:) The solid line is the average log likelihood of the training data, and the dashed line is the log likelihood of the CV data. There are a series of plots for different values of the L2 regulator beta, the plot displayed here is for the optimal beta. The plot is jagged because of the aggressive way I varied the learning rate through the optimization. (Right:) The CV average log likelihood at the end of training as a function of beta. Small values of beta indicate over-training, and large values indicate under-training. The optimal value of beta is given by the arg max of this curve. <br><br>" %}
+
+With the model trained, let's look at the accuracy (at the end of training) across the different sentiments:
+
+```
++----------+----------+--------------+--------------+--------------+
+| data set | accuracy | (-) accuracy | (0) accuracy | (+) accuracy |
++----------+----------+--------------+--------------+--------------+
+|    CV    |   80.1   |    77.05     |    91.45     |     71.8     |
+|   S140   |  62.78   |    58.76     |    58.27     |    70.17     |
+|    SA    |  48.25   |    49.01     |    46.91     |    53.44     |
++----------+----------+--------------+--------------+--------------+
+```
+
+Overall, the Maximum Entropy method is doing better than Naive Bayes. It's doing better on the S140 set by about 7 points, and worse on the SA set by about 3. Unlike Naive Bayes, the worst accuracies for the Maximum Entropy classifier depend on the data set (Naive Bayes always did the worst on (-) tweets).
+
+---
+
+#### Go et al Comparison
+
+One of the motivations for this whole project was to see if incorporating neutral tweets improved the performance, so how are these models doing compared to Go et al? Well, frustratingly, the answer isn't straightforward. The Go et al paper does not classify neutral tweets -- the only outputs are +/-. So if they were guaranteed to be given a test data set containing no neutral tweets, then they would find a certain accuracy, which is likely to be much better than my models because classification is easier across the board when there are fewer classes to consider. However, if they were given a data set with all 3 types of sentiments, then they would likely do quite poorly because they would classify every neutral tweet incorrectly. In fact, in an adversarial situation a data set could be easily designed for which they would get 0% correct -- just hand them only neutral tweets.
+
+In the S140 CV set used by the Go et al paper there are neutral tweets present, and in their paper they report a classification accuracy of about 80% for a variety of different models. However, neutral tweets make up 28% of the S140 CV set, and so if they are counting all the neutral tweets as being classified incorrectly, there's no way to get an accuracy higher than 72%.  They must be just looking at the +/- tweets only. I am tempted to compare my model against their 80% benchmark directly by restricting to +/- tweets only, but this isn't quite fair because my model was designed for 3 classes, so it should almost certainly preform worse than a model designed for just 2. So instead let me note that if the Go et al error was measured on a CV set with equal proportionals of each class, and they got 80% correct on the +/- 2/3 of the data, and 0% on the remaining neutral 1/3, then their error would be about 53%. With this way of comparing the results, my model beats theirs on the CV set they used (the S140 set) by a margin large enough to justify the effort. However, the accuracy still isn't as good as can be found in other sentiment classification problems, for example in building a spam filter where it's easy to get very close to 100% accuracy. Also, see this footnote for finer point on Go et al:[^5]
+
+---
+
+#### Parameter Space
+
+Looking at the classification error is a good way to evaluate the model, but ultimately, we are interested in measuring the average sentiment of a collection of tweets. Let there be \\( N \\) tweets, with \\( N\_c \\) tweets of each sentiment, so that \\( N = N\_+ + N\_0 + N\_- \\). It will be useful to work with the "tweet densities", defined by \\( n\_c = N\_c/N \\), which are then constrained to sum to 1: \\( n\_+ + n\_0 + n\_- = 1 \\). The average sentiment is then given by a simple function of these densities:
+
+$$ s = n_+ - n_- $$
+
+Here is how the two models compared against the true value for \\( s \\) on the 3 different CV sets:
+
+```
++----------+----------------+---------+---------+
+| data set | avg. sentiment | NB pred | ME pred |
++----------+----------------+---------+---------+
+|    CV    |      0.0       |   0.04  |  -0.012 |
+|   S140   |     0.008      |   0.0   |  0.091  |
+|    SA    |     -0.023     |   0.26  |  0.207  |
++----------+----------------+---------+---------+
+```
+
+Looking at \\( s\\), neither model is obviously better than the other. For the CV set Maximum Entropy does best, for the S140 set Naive Bayes does best, and for the SA set both models' predictions are horrendous. For some reason this data set is just much harder to classify correctly. This could be due to the peculiarities of the data, or in different conventions for how to hand-label the sentiments.
+
+Moving beyond these particular test sets, clearly the accuracy of a model should depend on the make-up of the data set in question. For example, if the model is really good at classifying negative sentiments, then the error will be low for data sets consisting of almost all negative tweets. To help characterize this notion, I found it useful to think of the densities as constituting a parameter space characterizing the make up of a data set. By solving for \\( n\_0 = 1 - n\_+ - n\_- \\), and remembering that each density obeys \\( 0 \le n\_c \le 1 \\), the parameter space becomes simply a 2D triangle, which is depicted below.
+
+{% include image.html url="/assets/twitter/paramspace.png" description="The parameter space in the n+, n- plane. The sides of the triangle correspond to one of the classes being absent, and the vertices correspond to two of the classes being absent (i.e. each tweet has the same sentiment). The dashed black lines are lines of constant sentiment. <br><br>" %}
+
+It may be useful to extrapolate the results for these particular test sets to gain an idea for how the model will preform on data sets from different points in the parameter space. To this end, I'll define a ''confusion matrix'' \\( M \\), where \\( M\_{ij} \\) is the fraction of class \\( i\\) tweets classified as class \\( j \\). This matrix will have the following 3 properties:
+
+$$ \sum_{i,j=1}^3 M_{ij} = 1, \qquad \sum_{j=1}^3 M_{ij} = n_i, \qquad \sum_{i=1}^3 M_{ij} = \hat{n}_j \, ,$$
+
+where \\( \hat{n}\_i \\) are the predicted densities of the data set. Starting from this matrix for a particular data set, the confusion matrix for any other data set with parameters \\( \tilde{n}\_i \\) can be constructed via
+
+$$ \tilde{M}_{ij} = \frac{\tilde{n}_i}{n_i} M_{ij} \, .$$
+
+This new matrix can then be used to find the new predicted densities \\( \hat{ \tilde{n} }\_i \\), and hence the predicted sentiment \\( \hat{\tilde{s}} \\). Clearly this error is linear in the parameters \\( \tilde{n}\_i \\), and so is extremized on the boundary of the parameter space triangle. In the real world we are unlikely to encounter data sets that are so polarized, and should expect typical data sets to lie closer to the center.
+
+It should be pointed out here that this analysis assumes the error only depends on the distribution of positive/neutral/negative tweets, which is definitely not the case -- the error also depends on the types of tweets in the data set, how they were labelled, etc. But this method is a good (and cheap) way to take the error for one data set and estimate it for similar data sets with different relative ratios of sentiments. 
+
+
+## Debate Analysis
+
+Now, finally, with the theoretical framework outlined and the models introduced and evaluated, I can apply my model to some real-world data. I, like most Americans, have been completely consumed by the US presidential election coverage. I don't want to get into my personal politics here, but I think I can safely say that this has been a very polarizing election cycle, characterized by extremely strong emotions across the political spectrum. Twitter has also played a larger role than ever before, partly because of Trump's tendency to make shocking, headline-grabbing tweets. The debates were even live-streamed on Twitter this year! So my first idea was to look at the sentiment of tweets mentioning the presidential debates. Would I be able to examine the sentiment and get a feel for who won the debate, or how the debates changed the overall mood in the twitter-verse?
+
+Thankfully, Twitter did me a really nice favor and created designated hashtags for the debates, **#debates**, and **#debates2016** (**#debatenight** was also popular but not official) which many people used. So I set up my crontab to download tweets mentioning these hashtags every 5 minutes, starting a few days before and ending a few days after the first 2 debates between Trump and Clinton. I didn't bother to look at the VP debate (but as a diligent political observer I stayed up late to watch it!). I then preprocessed the tweets as above, and used both models to analyze the sentiment. I decided to average the predictions of the two models. Here are plots of the moving average of the sentiment for the first two debates.
+
+{% include image.html url="/assets/twitter/BOTH_Debates_1and2_AvgSent.png" description="The moving averages for each debate and each candidate. <br><br>" %}
+
+There is a rapid fall and then spike in sentiment around each debate. I'm not really sure what to say here -- and this leads to a major problem with this sort of analysis. The tweets about the debate will contain both tweets against either candidate, and tweets in favor of either. So it's impossible to distill any candidate-specific sentiment from the overall sentiment alone. It makes more sense to look at sentiment averages for tweets that reference one and ONLY one candidate:
+
+{% include image.html url="/assets/twitter/BOTH_Debates_candidates_AvgSent.png" description="The sentiment moving averages for each debate and each candidate. The average for Trump-only tweets is plotted in red, and Clinton-only in blue. Any horizontal lines are due to gaps in my data collection. <br><br>" %}
+
+Now it's easy to backwards-engineer known trends from data, but these plots certainly invite the narrative that each debate hurt Trump. In addition to showing Trump sentiment fall around each debate, for the third debate there is also a pronounced upwards spike for Clinton. Interestingly enough, the spikes don't line up precisely with the debates -- perhaps indicating that the pre-debate hype and post-debate spin played a non-trivial role. The plots also show Clinton sentiment consistently better than Trump's, which would agree with polls at the time, although there are many reasons why averages of tweet sentiments might not correlate with polls, and so I wouldn't place too much importance on this.
+
+## Final Thoughts
+
+There are some interesting areas for further work. In terms of having a nice, polished product useful for the general public, I would like to make a website like [this one by Go et al](http://www.sentiment140.com). I think it would also be neat to investigate if this model can be used to create something like an electoral map, measuring the sentiment towards a particular candidate in different regions. 
+
+I would also be curious to explore how increasing the model complexity (for example, by moving beyond unigrams) would affect the accuracy, although Go et al claim that this doesn't affect the accuracy by much at all (actually, it decreases it by a bit).
+
+My models clearly have some shortcomings. I am doubtful that the models I have now are ready for any useful real-time sentiment analysis except all but the most polarized topics. Unless the accuracy can be improved, it seems like the signal is always under threat of being swallowed by the noise. Perhaps some further refinement such as restricting to certain topics, or taking into account some of the meta data such as the type of link, retweeted status, etc, could lead to some improvements that would make this approach viable. Also, there is a glaringly obvious issue with trying to conduct political polling through a medium that large swaths of the population do not use, especially older people. The models only support English, and aren't designed for complex issues. Perhaps this sort of approach would be better suited for measuring the response to a product, or specific events, rather than a political election. In any event, I think this is a really neat set of ideas and I wonder if something of the flavor of what I discussed here could be useful if implemented correctly.
+
+
+[comment]: <> (footnotes)
+[^1]: These neutral feeds have anywhere from \\(10^4\\) to \\(10^6\\) total tweets throughout their entire history. If I could download all of these I would have access to a huge number of neutral tweets, but unfortunately Twitter only allows the most recent 3200 tweets to be accessed. So to provide a boost to my data size, I also downloaded the most recent 3200 tweets of each handle at the outset of the data collection process. 
+[^2]: As I wrote this a thought occurred to me which is that not all languages have words separated by spaces, a good example is [Thai](http://www.thai-language.com/ref/breaking-words). To take an explicit realization of this, เด็กผู้ชายกินขนมปัง translates to "The boy is eating bread.", but appears as a continuous character string without spaces. A second complication is that, as in other languages like German, words can be combined (without spaces) to form new words. Therefore extending this method to tweets in certain non-Western languages therefore presents a unique challenge. In the course of writing this blog I discovered that this is actually an ongoing area of research.
+[^3]: Funnily enough, this paper is building off a method from an earlier set of papers by a group of authors that includes Robert Mercer, who is playing an important role in this election as Trump's biggest financial backer.
+[^4]: Due to the Twitter Terms of Service, Sanders Analytics weren't able to store the tweets on their website, so instead they stored a list of tweet id's and the sentiment assignments, and also provided a script to download the tweets automatically. Unfortunately, this website was made long enough ago that Twitter changed the requirements for interacting with the API, and now the interaction must be authenticated. Therefore the code they provide to download the tweets does not work, but it isn't too hard to refurbish it. A second point is that some of their tweets are classified as irrelevant, for example many non-English tweets are included. The number I quoted applies to the set of positive/neutral/negative tweets, with these irrelevant tweets deleted.
+[^5]: To make matters even more confusing, on their [website](http://www.sentiment140.com) they classify tweets into *three* classes even though their model can only handle the +/- classes. An easy way to do this without building a new model would be to only classify the tweet as +/- if the probability for either +/- was greater than some threshold (say 50%), and to otherwise classify it as neutral. It's unclear what exactly they are doing, and I sent them an email but haven't heard back.
+
+{% include disqus.html %}
+

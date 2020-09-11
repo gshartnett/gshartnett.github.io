@@ -84,7 +84,7 @@ author:
   avatar           : "hartnett_gavin_web.png"
   bio              : "Theoretical Physicist and Machine Learning Researcher"
   location         : "San Francisco, CA"
-  employer         : "RAND Corporation"
+  employer         : #"RAND Corporation"
   pubmed           : #"https://www.ncbi.nlm.nih.gov/pubmed/?term=john+snow"
   googlescholar    : "https://scholar.google.com/citations?user=Sv9i0lwAAAAJ&hl=en"
   email            :
