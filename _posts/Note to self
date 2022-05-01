@@ -1,1 +1,0 @@
-The code that takes these markdown files and turns them into pages is in the Jekyll Update directory. The code only works for posts starting with XXXX-XX-XX format where the XX are numbers.

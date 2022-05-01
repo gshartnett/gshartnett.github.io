@@ -14,10 +14,10 @@ description              : &description "personal description"
 url                      : https://gshartnett.github.io # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : "" # the subpath of your site, e.g. "/blog"
 repository               : "gshartnett/gshartnett.github.io"
-teaser                   :  # filename of teaser fallback teaser image placed in /images/, .e.g. "500x300.png"
+teaser                   : # filename of teaser fallback teaser image placed in /images/, .e.g. "500x300.png"
 breadcrumbs              : false # true, false (default)
 words_per_minute         : 160
-future                   : true
+future                   : false
 read_more                : "disabled" # if enabled, adds "Read more" links to excerpts
 talkmap_link             : false #change to true to add link to talkmap on talks page
 comments:
@@ -57,12 +57,12 @@ yandex_site_verification :
 
 # Social Sharing
 twitter:
-  username               : &twitter
+  username               : gshartnett
 facebook:
   username               :
   app_id                 :
   publisher              :
-og_image                 :  # Open Graph/Twitter default site image
+og_image                 : profile.png # Open Graph/Twitter default site image
 # For specifying social profiles
 # - https://developers.google.com/structured-data/customize/social-profiles
 social:
@@ -73,22 +73,25 @@ social:
 
 # Analytics
 analytics:
-  provider               :  "google-universal" # false (default), "google", "google-universal", "custom"
+  provider               : #"goatcounter" # false (default), "google", "google-universal", "custom", "goatcounter"
   google:
     tracking_id          :
+  goatcounter:
+    code		 : #jayrobwilliams
 
 
 # Site Author
 author:
   name             : "Gavin Hartnett"
-  avatar           : "hartnett_gavin_web.png"
+  avatar           : "profile.png"
   bio              : "Theoretical Physicist and Machine Learning Researcher"
-  location         : "Santa Monica, CA"
-  employer         : #"RAND Corporation"
-  pubmed           : #"https://www.ncbi.nlm.nih.gov/pubmed/?term=john+snow"
+  location         :
+  employer         :
+  pubmed           :
+  orcid            : "http://orcid.org/0000-0002-6814-1809"
   googlescholar    : "https://scholar.google.com/citations?user=Sv9i0lwAAAAJ&hl=en"
-  email            :
-  researchgate     : #"https://www.researchgate.net/profile/Gavin_Hartnett"
+  email            : "gshartnett@gmail.com"
+  researchgate     :  "https://www.researchgate.net/profile/Gavin-Hartnett-2"
   uri              :
   bitbucket        :
   codepen          :
@@ -97,16 +100,16 @@ author:
   facebook         :
   foursquare       :
   github           : "gshartnett"
+  gitlab           :
   google_plus      :
   keybase          :
   instagram        :
   impactstory      : #"https://profiles.impactstory.org/u/xxxx-xxxx-xxxx-xxxx"
   lastfm           :
-  linkedin         : #"gavinhartnett"
-  orcid            : #"http://orcid.org/0000-0002-6814-1809"
+  linkedin         : "gavinhartnett"
   pinterest        :
   soundcloud       :
-  stackoverflow    : # http://stackoverflow.com/users/123456/username
+  stackoverflow    : #"https://stackoverflow.com/users/10912314/jayrobwilliams"
   steam            :
   tumblr           :
   twitter          : "gshartnett"
@@ -175,13 +178,10 @@ kramdown:
 
 # Collections
 collections:
-  teaching:
-    output: true
-    permalink: /:collection/:path/
   publications:
     output: true
     permalink: /:collection/:path/
-  portfolio:
+  research:
     output: true
     permalink: /:collection/:path/
   talks:
@@ -227,10 +227,10 @@ defaults:
       author_profile: true
       share: true
       comments: true
-  # _portfolio
+  # _research
   - scope:
       path: ""
-      type: portfolio
+      type: research
     values:
       layout: single
       author_profile: true
