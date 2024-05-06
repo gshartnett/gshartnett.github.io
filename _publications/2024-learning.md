@@ -2,7 +2,7 @@
 title: "Learning to rank quantum circuits for hardware-optimized performance enhancement"
 collection: publications
 permalink: /publication/2024-learning
-date: 2024-01-04
+date: 2024-01-01
 venue: 'Arxiv Preprint'
 paperurl: #'/files/pdf/research/Agreement Strength.pdf'
 link: 'https://arxiv.org/abs/2404.06535'

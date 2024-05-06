@@ -2,7 +2,7 @@
 title: "The Karzas-Latter-Seiler Model of a High-Altitude Electromagnetic Pulse: A New Numerical Code for an Old Model"
 collection: publications
 permalink: /publication/2024-karzas
-date: 2024-01-03
+date: 2024-01-01
 venue: 'RAND Working Report WR-A879-2'
 paperurl: #'/files/pdf/research/Agreement Strength.pdf'
 link: 'https://doi.org/10.7249/WRA879-2'
