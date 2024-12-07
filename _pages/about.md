@@ -8,7 +8,7 @@ redirect_from:
   - /about.html
 ---
 
-Welcome to my personal website! I am a theoretical physicist and machine learning researcher working on techniques to improve the performance of quantum computers at [Q-CTRL](https://q-ctrl.com/). I am particularly interested in problems that sit at the intersection of machine learning (ML) and physics.
+Welcome to my personal website! I am a theoretical physicist and machine learning researcher working on techniques to improve the performance of quantum computers at [Q-CTRL](https://q-ctrl.com/), where I am the lead of the Applications and Algorithms team.
 
 I was previously an Information Scientist at the RAND Corporation, where I conducted quantitative, data-driven research into a wide range of policy problems and was also a professor at the Pardee RAND Graduate School. I worked on a diverse range of problems, including building computational models of epidemics, studying the AI safety implications of adversarial examples designed to fool computer vision models, studying the physics of nuclear weapons effects, and using graph neural networks to solve public policy problems. In the past year I have also been involved in red-teaming Large Language Models (LLMs), including OpenAI's GPT-4.
 
