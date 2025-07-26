@@ -23,8 +23,8 @@ Led "tiger team" initiative to build shared codebase for core error suppression 
 ### [Nuclear Weapons Effects Modeling](/projects/nuclear-weapons-effect/)
 Development of new numerical code for the Karzas-Latter-Seiler model of high-altitude electromagnetic pulse (EMP) effects.
 
-### [COVID-19 Contact Network Modeling](/projects/covid-modeling/)
-Developed city-scale contact network models for understanding pandemic spread and intervention effectiveness.
+### [Network Science Approaches for Public Policy](/projects/network-science/)
+Developed deep learning methods for synthetic network generation and applied network science to optimize vaccination strategies during pandemics.
 
 ### Machine Learning & AI Projects
 
