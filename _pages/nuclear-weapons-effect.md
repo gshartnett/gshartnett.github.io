@@ -7,8 +7,6 @@ author_profile: true
 
 {% include base_path %}
 
-# Nuclear Weapons Effects Modeling
-
 Understanding the effects of nuclear weapons on civilian infrastructure is critical for national security planning and policy development. As our society becomes increasingly dependent on electronic systems and interconnected networks, the potential for widespread disruption from electromagnetic effects grows. My work in this area at RAND focused on developing better computational tools and models to help defense analysts and policymakers understand these vulnerabilities.
 
 ## High-Altitude Nuclear Explosions (HANE) Research
