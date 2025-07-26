@@ -26,11 +26,5 @@ Development of new numerical code for the Karzas-Latter-Seiler model of high-alt
 ### [Network Science Approaches for Public Policy](/projects/network-science/)
 Developed deep learning methods for synthetic network generation and applied network science to optimize vaccination strategies during pandemics.
 
-### Machine Learning & AI Projects
-
-### Large Language Model Red-teaming
-Conducted safety and security testing for major language models including Meta's models and OpenAI's GPT-4.
-
-### AI Study Circle at RAND
-Built and grew internal AI community from concept to 140+ researchers across 4 offices with 30-40 regular attendees.
-
+### [AI and Public Policy](/projects/ai-policy/)
+Conducted research on adversarial machine learning vulnerabilities and defense policy NLP analysis, while contributing to AI safety through red-teaming efforts with OpenAI and Meta and founding RAND's influential AI research community.
