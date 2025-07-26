@@ -11,6 +11,10 @@ Understanding how diseases spread through social networks and how to optimally d
 
 ## Deep Generative Modeling for Network Science
 
+<div style="text-align: center;">
+    <img src="/images/NDSSL_Projection.png" alt="" style="width: 50%; height: auto; margin-bottom: 20px;">
+</div>
+
 Agent-based models increasingly require large-scale synthetic populations with rich demographic and behavioral information, but this data is often scattered across incompatible datasets. I led the development of novel deep learning approaches to address four key challenges in addressing this problem: synthetic network generation, network rescaling, data imputation, and network fusion.
 
 The centerpiece was developing "Graph Generation by Iterated Link Prediction" - a new algorithm using graph neural networks to create synthetic social contact networks. Unlike traditional Exponential Random Graph Models, this method scales to networks with millions of nodes and edges.
@@ -20,6 +24,10 @@ We demonstrated these methods using the NDSSL dataset (1.6 million individuals i
 This work provides tools for creating ensemble simulations, testing model sensitivity, and developing representative datasets for different cities without privacy concerns. The methodology and code are available on [GitHub](https://github.com/RANDCorporation/dgmnet), with the full technical report avilable as a [RAND Working Report](https://www.rand.org/pubs/working_papers/WRA1671-1.html).
 
 ## Network-Based Vaccination Strategy Analysis
+
+<div style="text-align: center;">
+    <img src="/images/SEIR_vacc_fraction.png" alt="" style="width: 75%; height: auto; margin-bottom: 20px;">
+</div>
 
 Motivated by the imminent availability of COVID-19 vaccines, this project compared the efficacies of different network-based vaccination strategies using real-world contact data. It is a well-known result in network science that, depending on the network topology, targeted strategies, where more connected nodes are vaccinated first, can sometimes far outperform the strategy where nodes are vaccinated uniformly at random.
 
