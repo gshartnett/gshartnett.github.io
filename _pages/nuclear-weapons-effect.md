@@ -11,9 +11,17 @@ Understanding the effects of nuclear weapons on civilian infrastructure is criti
 
 ## High-Altitude Nuclear Explosions (HANE) Research
 
+<div style="text-align: center;">
+    <img src="/images/HANE.png" alt="High-altitude nuclear explosion effects diagram" style="width: 50%; height: auto;">
+</div>
+
 I contributed to research examining the effects of a high-altitude nuclear explosion (HANE) on satellite systems. The project required analyzing how modern satellite technology differs in vulnerability compared to the systems that existed during the original Cold War-era studies. This research highlighted the growing vulnerability of our space-based systems and the need for updated protective measures as satellites become increasingly critical for both civilian and military operations. The full report is available at [RAND RRA3028-3](https://www.rand.org/pubs/research_reports/RRA3028-3.html).
 
 ## Karzas-Latter-Seiler EMP Modeling Project
+
+<div style="text-align: center;">
+    <img src="/images/Topeka_smile.png" alt="EMP effects simulation visualization" style="width: 50%; height: auto;">
+</div>
 
 I developed a new numerical implementation of the classic Karzas-Latter-Seiler model for simulating electromagnetic pulse effects from high-altitude nuclear explosions. This foundational model, originally developed in the 1960s, describes how high-energy gamma rays from a nuclear weapon interact with the Earth's atmosphere at high altitude, creating what's known as the Compton effect on a massive scale. The resulting electromagnetic pulse can affect electronic systems over continental distances.
 
