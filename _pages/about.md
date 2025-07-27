@@ -12,9 +12,7 @@ Welcome to my website! I'm a physicist and machine learning researcher leading t
 
 ## Current Work & Research Interests
 
-At Q-CTRL, I lead a team developing practical applications for near-term quantum computers. Our work spans quantum optimization, simulation of quantum systems, quantum chemistry, and quantum machine learning. I'm particularly excited about projects that bridge the gap between theoretical quantum algorithms and real hardware implementations.
-
-Recent highlights include formulating protein folding problems as combinatorial optimization challenges suitable for quantum computers, designing quantum kernels for machine learning applications, and creating large-scale entangled states using quantum error correction primitives. I'm also developing machine learning approaches for quantum circuit layout optimization and building state-of-the-art photonic circuit simulation engines.
+At Q-CTRL, I lead a team developing practical applications for near-term quantum computers. Our work spans quantum optimization, simulation of quantum systems, quantum chemistry, and quantum machine learning. I'm particularly excited about projects that bridge the gap between theoretical quantum algorithms and real hardware implementations. Current work includes formulating protein folding problems as combinatorial optimization challenges suitable for quantum computers, designing improved quantum kernels for machine learning applications, and building state-of-the-art photonic circuit simulation engines. For a summary of recent publications, see [here](/projects/quantum-computing/).
 
 Beyond research, I play a key role in software engineering and team management. One aspect of quantum applications research that I particularly enjoy is ensuring that research software facilitates both agile exploration of new ideas and seamless integration with production systems. I believe that writing good code is fundamentally about thinking clearly—the challenge is making sure our software implementations are as elegant and well-structured as our ideas about how to best harness quantum computers.
 
